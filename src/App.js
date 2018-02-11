@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import request from 'superagent';
 
 class App extends Component {
   constructor() {
@@ -13,6 +14,27 @@ class App extends Component {
     alert('Hello I am clicked!');
   }
 
+  componentDidMount() {
+    this.setState({
+      randomQuote: "Loading a great quote..."
+    })
+    request.get('https://talaikis.com/api/quotes/random/')
+      .end((error,result) => {
+        this.setState({
+            randomQuote: result.body.quote + " - " + result.body.author
+          })
+      });
+  }
+
+  refreshQuote() {
+    request.get('https://talaikis.com/api/quotes/random/')
+    .end((error,result) => {
+      this.setState({
+          randomQuote: result.body.quote + " - " + result.body.author
+        })
+    });
+    this.setState(this.state);
+  }
   render() {
     return (
       <div className="App">
@@ -22,6 +44,7 @@ class App extends Component {
         <button onClick={this.handleClick.bind(this)}>Click Me!</button>
         <p>REACT TEST</p>
         <p>React Training Day 1</p>
+        <p onClick={this.refreshQuote.bind(this)}>{this.state.randomQuote}</p>
       </div>
     );
   }
@@ -49,9 +72,9 @@ class GroceryList extends Component {
     return (
 <div style={{borderStyle: 'solid'}}>
   <h1>Grocery List</h1>
-  <u1 style={{listStyle: 'none'}}>
+  <ul style={{listStyle: 'none'}}>
     {products.map(product => <li>{product}</li>)}
-  </u1>
+  </ul>
   <br></br>
 </div>
     );
@@ -90,13 +113,14 @@ class ToDoList extends Component {
         <br></br>
         <h3 style={{textAlign: 'left'}}>To Do Items</h3>
         <div id="list" style={{textAlign: 'left'}}>
-          <u1>
+          <ul>
             {this.state.todoItems.map(item => <li onClick={this.selectItem.bind(this, item)}>{item}</li>)}
-          </u1>
+          </ul>
         </div>
         <br></br>
       </div>
     );
   }
 }
+
 export default App;
